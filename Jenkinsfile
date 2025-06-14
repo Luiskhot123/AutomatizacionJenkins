@@ -48,7 +48,6 @@ pipeline {
 
         stage('Notificar al programador') {
             steps {
-             //   echo '✅ El pipeline finalizó correctamente y la app fue desplegada en producción.'
                 bat 'echo Notificación completada'
             }
         }
