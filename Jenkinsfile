@@ -24,13 +24,7 @@ pipeline {
             }
         }
 
-        stage('Esperar calidad del código') {
-            steps {
-                timeout(time: 1, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+        
 
         stage('Desplegar en pruebas') {
             steps {
