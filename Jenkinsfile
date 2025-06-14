@@ -13,7 +13,6 @@ pipeline {
         stage('Compilar') {
             steps {
                 bat 'mvn clean package'
-                currentBuild.result = 'UNSTABLE'
             }
         }
 
@@ -25,7 +24,15 @@ pipeline {
             }
         }
 
-        
+        stage('Esperar calidad del código') {
+            steps {
+                script {
+            
+                    currentBuild.result = 'UNSTABLE'
+                 }       
+            }
+        }           
+
 
         stage('Desplegar según resultado') {
             steps {
