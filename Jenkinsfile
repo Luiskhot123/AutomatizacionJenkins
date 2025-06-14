@@ -12,14 +12,14 @@ pipeline {
     stages {
         stage('Compilar') {
             steps {
-                sh 'mvn clean package'
+                bat 'mvn clean package'
             }
         }
 
         stage('Análisis SonarQube') {
             steps {
                 withSonarQubeEnv('SonarQube') {  // usa el mismo nombre del servidor configurado
-                    sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner"
+                    bat "${SONAR_SCANNER_HOME}\\bin\\sonar-scanner.bat"
                 }
             }
         }
@@ -34,13 +34,15 @@ pipeline {
 
         stage('Desplegar en pruebas') {
             steps {
-                sh 'cp target/*.war /opt/tomcat-test/webapps/app.war'
+                bat 'copy target\\*.war C:\\Users\\luisk\\tomcat-pruebas\\webapps\\app.war'
+
             }
         }
 
         stage('Desplegar en producción') {
             steps {
-                sh 'cp target/*.war /opt/tomcat-prod/webapps/app.war'
+                bat 'copy target\\*.war C:\\Users\\luisk\\tomcat-produccion\\webapps\\app.war'
+
             }
         }
 
