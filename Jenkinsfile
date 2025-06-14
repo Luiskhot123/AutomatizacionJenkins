@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        SONAR_SCANNER_HOME = tool 'SonarQubeScanner' // nombre exacto del scanner en Jenkins
+        SONAR_SCANNER_HOME = tool 'SonarQubeScanner'
     }
 
     stages {
@@ -18,33 +18,41 @@ pipeline {
 
         stage('Análisis SonarQube') {
             steps {
-                withSonarQubeEnv('SonarQube') {  // usa el mismo nombre del servidor configurado
+                withSonarQubeEnv('SonarQube') {
                     bat "${SONAR_SCANNER_HOME}\\bin\\sonar-scanner.bat"
                 }
             }
         }
 
-        
-
-        stage('Desplegar en pruebas') {
+        stage('Esperar calidad del código') {
             steps {
-                bat 'copy target\\*.war C:\\Users\\luisk\\tomcat-pruebas\\webapps\\app.war'
-
+                timeout(time: 5, unit: 'MINUTES') {
+                    script {
+                        def qualityGate = waitForQualityGate()
+                        if (qualityGate.status != 'OK') {
+                            currentBuild.result = 'UNSTABLE'
+                        }
+                    }
+                }
             }
         }
 
-        stage('Desplegar en producción') {
+        stage('Desplegar según resultado') {
             steps {
-                bat 'copy target\\*.war C:\\Users\\luisk\\tomcat-produccion\\webapps\\app.war'
-
-            }
-        }
-
-        stage('Notificar al programador') {
-            steps {
-                bat 'echo Notificación completada'
+                script {
+                    if (currentBuild.result == 'UNSTABLE') {
+                        echo '⚠️ Calidad de código NO aprobada. Desplegando en entorno de pruebas...'
+                        bat 'copy target\\*.war C:\\Users\\luisk\\tomcat-pruebas\\webapps\\app.war'
+                        bat 'echo Notificación: El código tiene errores. Desplegado en pruebas.'
+                    } else {
+                        echo '✅ Calidad de código aprobada. Desplegando en producción...'
+                        bat 'copy target\\*.war C:\\Users\\luisk\\tomcat-produccion\\webapps\\app.war'
+                        bat 'echo Notificación: Código limpio. Desplegado en producción.'
+                    }
+                }
             }
         }
     }
 }
+
 
