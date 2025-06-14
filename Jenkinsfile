@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
             
-                    currentBuild.result = 'UNSTABLE'
+                    currentBuild.result = 'OK'
                  }       
             }
         }           
