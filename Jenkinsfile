@@ -24,18 +24,7 @@ pipeline {
             }
         }
 
-        stage('Esperar calidad del código') {
-            steps {
-                timeout(time: 5, unit: 'MINUTES') {
-                    script {
-                        def qualityGate = waitForQualityGate()
-                        if (qualityGate.status != 'OK') {
-                            currentBuild.result = 'UNSTABLE'
-                        }
-                    }
-                }
-            }
-        }
+        currentBuild.result = 'UNSTABLE'
 
         stage('Desplegar según resultado') {
             steps {
